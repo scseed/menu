@@ -59,50 +59,55 @@ abstract class Menu_Core {
 		$menu = NULL;
 		foreach($menu_child as $child)
 		{
-			$key = $child->route_name . '_' . $child->directory . '_' . $child->controller . '_' . $child->action;
-			$menu[$key] = $child->as_array();
-			$menu[$key]['parent'] = $key;
-			$menu[$key]['title'] = $child->title;
+			$key = $child->route_name . '_'
+			     . $child->directory . '_'
+			     . $child->controller . '_'
+			     . $child->action;
+			$menu[$key]             = $child->as_array();
+			$menu[$key]['parent']   = $key;
+			$menu[$key]['title']    = $child->title;
 			if($child->has_children())
 			{
 				$subchilds = $child->children();
 
 				foreach($subchilds as $subchild)
 				{
-					$sub_key = $subchild->route_name . '_' . $subchild->directory  . '_' . $subchild->controller . '_' .$subchild->action;
-					$menu[$key]['submenu'][$sub_key] = $subchild->as_array();
-					$menu[$key]['submenu'][$sub_key]['parent'] = $key;
-					$menu[$key]['submenu'][$sub_key]['title'] = $subchild->title;;
+					$sub_key = $subchild->route_name . '_'
+					         . $subchild->directory  . '_'
+					         . $subchild->controller . '_'
+					         . $subchild->action;
+					$menu[$key]['submenu'][$sub_key]            = $subchild->as_array();
+					$menu[$key]['submenu'][$sub_key]['parent']  = $key;
+					$menu[$key]['submenu'][$sub_key]['title']   = $subchild->title;;
 				}
 			}
 		}
 
 	    if($menu)
 	    {
-		    // Формирование меню из полученных из базы данных
+		    // Forming menu array from database data
 			$menu = $this->_gen_menu($menu);
 
-			// Поиск активного уровня меню
-			$active_menu_block = $this->_find_parent($menu, $active_menu);
-			$active_submenu_block = $this->_find_current($menu);
+			// Searching the active menu item
+			$active_menu_item    = $this->_find_parent($menu, $active_menu);
+			$active_submenu_item = $this->_find_current($menu);
 
 			$current_route_defaults = Request::instance()->route->get_defaults();
 
-			if($active_menu_block === NULL)
+			if($active_menu_item === NULL)
 			{
-				$active_menu_block = $current_route_defaults['controller'] . 'directory' . '_'
-					. $current_route_defaults['controller'] . '_'
-					. $current_route_defaults['action'] . '_'
-					. $current_route_defaults['id'];
+				$active_menu_item = $current_route_defaults['directory'] . '_'
+				                  . $current_route_defaults['controller'] . '_'
+				                  . $current_route_defaults['action'] . '_'
+				                  . $current_route_defaults['id'];
 			}
 
-			// Определение активного пункта меню
-			$menu[$active_menu_block]['class'] = $this->_active_class;
-			if($active_submenu_block)
-				$menu[$active_menu_block]['submenu'][$active_submenu_block]['class'] = $this->_active_class;
+			// Marking active menu item by setting active class to it
+			$menu[$active_menu_item]['class'] = $this->_active_class;
+			if($active_submenu_item)
+				$menu[$active_menu_item]['submenu'][$active_submenu_item]['class'] = $this->_active_class;
 
-			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)
-				->bind('menu_arr', $menu);
+			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
 	    }
 		else
 		{
@@ -111,8 +116,8 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Генерация массива меню для вывода в представление.
-	 * Обрабатывает отсутствующие значения для избежания ошибок.
+	 * Menu array generating to pass it to a view generating.
+	 * Fills empty values to preserve errors.
 	 *
 	 * @param  array  $menu_array
 	 * @param  string $parent
@@ -123,24 +128,24 @@ abstract class Menu_Core {
 		$menu = array();
 		foreach($menu_array as $item_name => $menu_item)
 		{
-			$route_name = arr::get($menu_item, 'route_name', 'default');
-			$route = Route::get($route_name);
+			$route_name     = arr::get($menu_item, 'route_name', 'default');
+			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
 
 		    if($menu_item['route_name'] == 'page')
 		    {
 			    $href = $route->uri(array(
-					'lang' => I18n::$lang,
+					'lang'       => I18n::$lang,
 					'page_alias' => arr::get($menu_item, 'object_id', NULL),
 				));
 		    }
 		    else
 		    {
 			    $href = $route->uri(array(
-					'directory' => arr::get($menu_item, 'directory', NULL),
-					'controller' => arr::get($menu_item, 'controller', NULL),
-					'action' =>  arr::get($menu_item, 'action', NULL),
-					'id' => arr::get($menu_item, 'object_id', NULL),
+					'directory'     => arr::get($menu_item, 'directory', NULL),
+					'controller'    => arr::get($menu_item, 'controller', NULL),
+					'action'        =>  arr::get($menu_item, 'action', NULL),
+					'id'            => arr::get($menu_item, 'object_id', NULL),
 				));
 		    }
 
@@ -162,16 +167,15 @@ abstract class Menu_Core {
 			}
 
 			$menu[$item_name] = array(
-				'parent' => $parent_name,                                               // родительный уровень
-				'title'  => __(arr::get($menu_item, 'title', '')),                      // заголовок ссылки
-				'href'   => $href,
-				'class'   => arr::get($menu_item, 'class', NULL),                       // класс ссылки
-				'directory' => $route_name,                                             // директория роута
-				'visible' => arr::get($menu_item, 'visible', TRUE),                     // признак видимости
-				'submenu' => ( ! empty($menu_item['submenu']))                          // формирование подменю
-					? $this->_gen_menu($menu_item['submenu'], $parent_name)
-					: array(),
-
+				'parent'    => $parent_name,                                            // parent lavel name
+				'title'     => __(arr::get($menu_item, 'title', '')),                   // anchor title
+				'href'      => $href,                                                   // anchor href
+				'class'     => arr::get($menu_item, 'class', NULL),                     // anchor class name
+				'directory' => $route_name,                                             // route directory
+				'visible'   => arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
+				'submenu'   => ( ! empty($menu_item['submenu']))                        // submenu
+				                ? $this->_gen_menu($menu_item['submenu'], $parent_name)
+				                : array(),
 			);
 
 		}
@@ -180,7 +184,7 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Поиск родительского элемента для присвоения ему статуса активности
+	 * Paren element finding and marking
 	 *
 	 * @param  array  $menu_array
 	 * @param  string $active_menu
@@ -209,7 +213,7 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Определение текущего активного элемента
+	 * Finding current active element of menu array.
 	 *
 	 * @param  array $menu
 	 * @return string/null
@@ -238,7 +242,7 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Проверка на доступность раздела. Метод можно переопределить и использовать собственные проверки
+	 * Access check
 	 *
 	 * @param  string $route_name
 	 * @param  string $controller

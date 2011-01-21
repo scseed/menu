@@ -4,6 +4,7 @@
  * Route extention
  *
  * @package Menu
+ * @author  avis <smgladkovskiy@gmail.com>
  */
 class Route extends Kohana_Route {
 
