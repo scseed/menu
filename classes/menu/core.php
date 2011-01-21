@@ -1,12 +1,12 @@
-	<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
-	/**
-	* Class Menu
-	*
-	* @package Menu
-	* @author  avis <smgladkovskiy@gmail.com>
-	*/
-	abstract class Menu_Core {
+/**
+* Class Menu
+*
+* @package Menu
+* @author  avis <smgladkovskiy@gmail.com>
+*/
+abstract class Menu_Core {
 
 	// Instance storage
 	protected static $instance;
@@ -294,4 +294,4 @@
 	//		))->insert_as_first_child($user);
 	//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
 	}
-	} // End Menu_Core
+} // End Menu_Core
