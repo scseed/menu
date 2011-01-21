@@ -1,12 +1,12 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+	<?php defined('SYSPATH') or die('No direct access allowed.');
 
-/**
- * Class Menu
- *
- * @package Menu
- * @author  avis <smgladkovskiy@gmail.com>
- */
-abstract class Menu_Core {
+	/**
+	* Class Menu
+	*
+	* @package Menu
+	* @author  avis <smgladkovskiy@gmail.com>
+	*/
+	abstract class Menu_Core {
 
 	// Instance storage
 	protected static $instance;
@@ -60,7 +60,7 @@ abstract class Menu_Core {
 		foreach($menu_child as $child)
 		{
 			$key = $child->route_name . '_'
-			     . $child->directory . '_'
+			     . $child->directory  . '_'
 			     . $child->controller . '_'
 			     . $child->action;
 			$menu[$key]             = $child->as_array();
@@ -83,9 +83,9 @@ abstract class Menu_Core {
 			}
 		}
 
-	    if($menu)
-	    {
-		    // Forming menu array from database data
+		if($menu)
+		{
+			// Forming menu array from database data
 			$menu = $this->_gen_menu($menu);
 
 			// Searching the active menu item
@@ -96,9 +96,9 @@ abstract class Menu_Core {
 
 			if($active_menu_item === NULL)
 			{
-				$active_menu_item = $current_route_defaults['directory'] . '_'
+				$active_menu_item = $current_route_defaults['directory']  . '_'
 				                  . $current_route_defaults['controller'] . '_'
-				                  . $current_route_defaults['action'] . '_'
+				                  . $current_route_defaults['action']     . '_'
 				                  . $current_route_defaults['id'];
 			}
 
@@ -108,7 +108,7 @@ abstract class Menu_Core {
 				$menu[$active_menu_item]['submenu'][$active_submenu_item]['class'] = $this->_active_class;
 
 			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
-	    }
+		}
 		else
 		{
 			return NULL;
@@ -132,30 +132,30 @@ abstract class Menu_Core {
 			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
 
-		    if($menu_item['route_name'] == 'page')
-		    {
-			    $href = $route->uri(array(
+			if($menu_item['route_name'] == 'page')
+			{
+				$href = $route->uri(array(
 					'lang'       => I18n::$lang,
 					'page_alias' => arr::get($menu_item, 'object_id', NULL),
 				));
-		    }
-		    else
-		    {
-			    $href = $route->uri(array(
+			}
+			else
+			{
+				$href = $route->uri(array(
 					'directory'     => arr::get($menu_item, 'directory', NULL),
 					'controller'    => arr::get($menu_item, 'controller', NULL),
 					'action'        =>  arr::get($menu_item, 'action', NULL),
 					'id'            => arr::get($menu_item, 'object_id', NULL),
 				));
-		    }
+			}
 
-		    if( ! $this->_access_check(
-			    $route_name,
-			    arr::get($menu_item, 'controller', $route_defaults['controller'])
-		    ))
-		    {
-			    continue;
-		    }
+			if( ! $this->_access_check(
+				$route_name,
+				arr::get($menu_item, 'controller', $route_defaults['controller'])
+			))
+			{
+				continue;
+			}
 
 			if($parent === NULL)
 			{
@@ -230,15 +230,15 @@ abstract class Menu_Core {
 				$current = $name;
 			}
 
-		    if(! empty($item['submenu']))
+			if(! empty($item['submenu']))
 			{
 				$current = $this->_find_current($item['submenu']);
 			}
 		}
 
-	    if($current) return $current;
+		if($current) return $current;
 
-	    return NULL;
+		return NULL;
 	}
 
 	/**
@@ -264,34 +264,34 @@ abstract class Menu_Core {
 			}
 		}
 
-	    return TRUE;
+		return TRUE;
 	}
 
 	protected function _menu_fullfill()
 	{
-//		$new_children = Jelly::factory('menu')->set(array(
-//			'title' => 'Партнёры',
-//			'controller' => 'partners',
-//		))->insert_as_last_child($_menu);
+	//		$new_children = Jelly::factory('menu')->set(array(
+	//			'title' => 'Партнёры',
+	//			'controller' => 'partners',
+	//		))->insert_as_last_child($_menu);
 
-//	    exit(Kohana::debug($new_children));
-//	    $new_root = Jelly::factory('menu')->set(array(
-//			'name' => 'top',
-//		    'title' => NULL,
-//		    'directory' => NULL,
-//		    'visible' => FALSE,
-//		))->insert_as_new_root();
+	//	    exit(Kohana::debug($new_children));
+	//	    $new_root = Jelly::factory('menu')->set(array(
+	//			'name' => 'top',
+	//		    'title' => NULL,
+	//		    'directory' => NULL,
+	//		    'visible' => FALSE,
+	//		))->insert_as_new_root();
 
 
-//		$deleted = Jelly::select('menu')->load(18)->delete_obj();
-//		$user = Jelly::select('menu')->load(14);
-//		$new_directory = Jelly::factory('menu')->set(array(
-//			'name' => 'Пользователь',
-//			'action' => NULL,
-//			'controller' => 'home',
-//			'route_name' => 'user',
-//			'visible' => 0
-//		))->insert_as_first_child($user);
-//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
+	//		$deleted = Jelly::select('menu')->load(18)->delete_obj();
+	//		$user = Jelly::select('menu')->load(14);
+	//		$new_directory = Jelly::factory('menu')->set(array(
+	//			'name' => 'Пользователь',
+	//			'action' => NULL,
+	//			'controller' => 'home',
+	//			'route_name' => 'user',
+	//			'visible' => 0
+	//		))->insert_as_first_child($user);
+	//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
 	}
-} // End Menu_Core
+	} // End Menu_Core
