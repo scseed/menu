@@ -96,10 +96,10 @@ abstract class Menu_Core {
 
 			if($active_menu_item === NULL)
 			{
-				$active_menu_item = $current_route_defaults['directory']  . '_'
-				                  . $current_route_defaults['controller'] . '_'
-				                  . $current_route_defaults['action']     . '_'
-				                  . $current_route_defaults['id'];
+				$active_menu_item = Arr::get($current_route_defaults, 'directory', NULL)  . '_'
+				                  . Arr::get($current_route_defaults, 'controller', NULL) . '_'
+				                  . Arr::get($current_route_defaults, 'action', NULL)     . '_'
+				                  . Arr::get($current_route_defaults, 'id', NULL);
 			}
 
 			// Marking active menu item by setting active class to it
@@ -250,20 +250,20 @@ abstract class Menu_Core {
 	 */
 	protected function _access_check($route_name, $controller)
 	{
-		if(class_exists('ACL'))
-		{
-			if ( ! ACL::instance()->is_allowed(
-				Auth::instance()->get_user()->roles->as_array('id', 'name'),
-				array(
-					'route_name' => $route_name,
-					'resource' => $controller
-				),
-				array('read')))
-			{
-				return FALSE;
-			}
-		}
-
+//		if(class_exists('ACL'))
+//		{
+//			if ( ! ACL::instance()->is_allowed(
+//				Auth::instance()->get_user()->roles->as_array('id', 'name'),
+//				array(
+//					'route_name' => $route_name,
+//					'resource' => $controller
+//				),
+//				array('read')))
+//			{
+//				return FALSE;
+//			}
+//		}
+//
 		return TRUE;
 	}
 
