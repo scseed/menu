@@ -9,7 +9,7 @@
 abstract class Menu_Core {
 
 	// Instance storage
-	protected static $instance;
+	protected static $instances;
 
 	// Menu views path
 	protected $_views_path = 'menu';
@@ -17,19 +17,37 @@ abstract class Menu_Core {
 	// Active menu anchor class name
 	protected $_active_class = 'active';
 
+	protected $_destination;
+
 	/**
 	 * Menu instance
 	 *
 	 * @return object Menu
 	 */
-	public static function instance()
+	public static function factory($destination = 'default')
 	{
-		if( ! is_object(self::$instance))
+		$menu_extention = 'Menu_' . ucfirst($destination);
+
+		if(class_exists($menu_extention))
 		{
-			self::$instance = new Menu();
+			$menu_class = $menu_extention;
+		}
+		else
+		{
+			$menu_class = 'Menu';
 		}
 
-		return self::$instance;
+		if( self::$instances[$destination] === NULL)
+		{
+			self::$instances[$destination] = new $menu_class($destination);
+		}
+
+		return self::$instances[$destination];
+	}
+
+	public function __construct($destination)
+	{
+		$this->_destination = $destination;
 	}
 
 	/**
@@ -44,25 +62,28 @@ abstract class Menu_Core {
 		$current_request_params = array(
 			Route::name($current_request->route),
 			$current_request->directory,
-			($current_request->controller == 'home') ? NULL : $current_request->controller,
-			($current_request->action == 'index') ? NULL : $current_request->action,
+			$current_request->controller,
+			$current_request->action,
 		);
 		$active_menu = implode('_', $current_request_params);
 
-		$_menu = Jelly::query('menu')
-			->where('name', '=', $type)
-			->limit(1)
-			->select();
+		$_menu = $this->_get_root($type);
 
 		$menu_child = $_menu->children();
 
-		$menu = NULL;
+		$menu = array();
 		foreach($menu_child as $child)
 		{
+			$route          = Route::get($child->route_name);
+			$route_defaults = $route->get_defaults();
+
+			$directory  = ($child->directory)  ? $child->directory  : Arr::get($route_defaults, 'directory', NULL);
+			$controller = ($child->controller) ? $child->controller : $route_defaults['controller'];
+			$action     = ($child->action)     ? $child->action     : $route_defaults['action'];
 			$key = $child->route_name . '_'
-			     . $child->directory  . '_'
-			     . $child->controller . '_'
-			     . $child->action;
+			     . $directory         . '_'
+			     . $controller        . '_'
+			     . $action;
 			$menu[$key]             = $child->as_array();
 			$menu[$key]['parent']   = $key;
 			$menu[$key]['title']    = $child->title;
@@ -72,10 +93,16 @@ abstract class Menu_Core {
 
 				foreach($subchilds as $subchild)
 				{
+					$route          = Route::get($subchild->route_name);
+					$route_defaults = $route->get_defaults();
+
+					$directory  = ($subchild->directory)  ? $subchild->directory  : Arr::get($route_defaults, 'directory', NULL);
+					$controller = ($subchild->controller) ? $subchild->controller : $route_defaults['controller'];
+					$action     = ($subchild->action)     ? $subchild->action     : $route_defaults['action'];
 					$sub_key = $subchild->route_name . '_'
-					         . $subchild->directory  . '_'
-					         . $subchild->controller . '_'
-					         . $subchild->action;
+					     . $directory                . '_'
+					     . $controller               . '_'
+					     . $action;
 					$menu[$key]['submenu'][$sub_key]            = $subchild->as_array();
 					$menu[$key]['submenu'][$sub_key]['parent']  = $key;
 					$menu[$key]['submenu'][$sub_key]['title']   = $subchild->title;;
@@ -88,22 +115,18 @@ abstract class Menu_Core {
 			// Forming menu array from database data
 			$menu = $this->_gen_menu($menu);
 
+
 			// Searching the active menu item
 			$active_menu_item    = $this->_find_parent($menu, $active_menu);
 			$active_submenu_item = $this->_find_current($menu);
 
-			$current_route_defaults = Request::instance()->route->get_defaults();
-
-			if($active_menu_item === NULL)
+			// Marking active menu item by setting active class to it
+			$menu_item_to_set_active = Arr::get($menu, $active_menu_item);
+			if($menu_item_to_set_active)
 			{
-				$active_menu_item = Arr::get($current_route_defaults, 'directory', NULL)  . '_'
-				                  . Arr::get($current_route_defaults, 'controller', NULL) . '_'
-				                  . Arr::get($current_route_defaults, 'action', NULL)     . '_'
-				                  . Arr::get($current_route_defaults, 'id', NULL);
+				$menu[$active_menu_item]['class'] = $this->_active_class;
 			}
 
-			// Marking active menu item by setting active class to it
-			$menu[$active_menu_item]['class'] = $this->_active_class;
 			if($active_submenu_item)
 				$menu[$active_menu_item]['submenu'][$active_submenu_item]['class'] = $this->_active_class;
 
@@ -143,8 +166,8 @@ abstract class Menu_Core {
 			{
 				$href = $route->uri(array(
 					'directory'     => arr::get($menu_item, 'directory', NULL),
-					'controller'    => arr::get($menu_item, 'controller', NULL),
-					'action'        =>  arr::get($menu_item, 'action', NULL),
+					'controller'    => arr::get($menu_item, 'controller', $route_defaults['controller']),
+					'action'        => arr::get($menu_item, 'action', $route_defaults['action']),
 					'id'            => arr::get($menu_item, 'object_id', NULL),
 				));
 			}
@@ -184,7 +207,7 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Paren element finding and marking
+	 * Finds parent element and marks it
 	 *
 	 * @param  array  $menu_array
 	 * @param  string $active_menu
@@ -213,7 +236,7 @@ abstract class Menu_Core {
 	}
 
 	/**
-	 * Finding current active element of menu array.
+	 * Finds current active element of menu array.
 	 *
 	 * @param  array $menu
 	 * @return string/null
@@ -293,5 +316,21 @@ abstract class Menu_Core {
 	//			'visible' => 0
 	//		))->insert_as_first_child($user);
 	//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
+	}
+
+	/**
+	 * Finds menu root
+	 *
+	 * @param  string $name
+	 * @return Jelly_Model_MPTT
+	 */
+	protected function _get_root($name)
+	{
+		return Jelly::query('menu')
+			->where('name', '=', $name)
+			->where('title', '=', NULL)
+			->where('route_name', '=', $this->_destination)
+			->limit(1)
+			->select();
 	}
 } // End Menu_Core
