@@ -58,13 +58,17 @@ abstract class Menu_Core {
 	 */
 	public function generate($type = 'top')
 	{
-		$current_request = Request::instance();
+//		return $this->_menu_fullfill();
+
+		$current_request = Request::current();
 		$current_request_params = array(
-			Route::name($current_request->route),
-			$current_request->directory,
-			$current_request->controller,
-			$current_request->action,
+			Route::name($current_request->route()),
+			$current_request->directory(),
+			$current_request->controller(),
+			$current_request->action(),
+//			serialize($current_request->param()),
 		);
+
 		$active_menu = implode('_', $current_request_params);
 
 		$_menu = $this->_get_root($type);
@@ -245,7 +249,7 @@ abstract class Menu_Core {
 	{
 		static $current;
 
-		$href = Request::instance()->uri().URL::query();
+		$href = Request::current()->uri().URL::query();
 		foreach($menu as $name => $item)
 		{
 			if($item['href'] == $href AND $name != $item['parent'])
@@ -298,23 +302,24 @@ abstract class Menu_Core {
 	//		))->insert_as_last_child($_menu);
 
 	//	    exit(Kohana::debug($new_children));
-	//	    $new_root = Jelly::factory('menu')->set(array(
-	//			'name' => 'top',
-	//		    'title' => NULL,
-	//		    'directory' => NULL,
-	//		    'visible' => FALSE,
-	//		))->insert_as_new_root();
+//		    $new_root = Jelly::factory('menu')->set(array(
+//				'name' => 'top',
+//			    'title' => NULL,
+//			    'directory' => NULL,
+//			    'visible' => FALSE,
+//			))->insert_as_new_root();
 
 
 	//		$deleted = Jelly::select('menu')->load(18)->delete_obj();
-	//		$user = Jelly::select('menu')->load(14);
-	//		$new_directory = Jelly::factory('menu')->set(array(
-	//			'name' => 'Пользователь',
-	//			'action' => NULL,
-	//			'controller' => 'home',
-	//			'route_name' => 'user',
-	//			'visible' => 0
-	//		))->insert_as_first_child($user);
+//			$root = Jelly::query('menu', 1)->select();
+			$neighbor = Jelly::query('menu', 6)->select();
+			$new_directory = Jelly::factory('menu')->set(array(
+				'title' => 'База знаний',
+//				'action' => NULL,
+				'controller' => 'partners',
+				'route_name' => 'faq',
+				'visible' => 1
+			))->insert_as_next_sibling($neighbor);
 	//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
 	}
 

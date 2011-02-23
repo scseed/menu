@@ -42,6 +42,10 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'default' => NULL,
 					'allow_null' => TRUE,
 				)),
+				'params' => Jelly::field('Serialized', array(
+					'default' => NULL,
+					'allow_null' => TRUE,
+				)),
 				'object_id' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
