@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `menu` (
   `directory` varchar(128) DEFAULT NULL COMMENT 'route directory',
   `controller` varchar(128) DEFAULT NULL COMMENT 'controller name',
   `action` varchar(128) DEFAULT NULL COMMENT 'action name',
+  `params` varchar(256) DEFAULT NULL COMMENT 'request params (serialized)',
   `object_id` char(20) DEFAULT NULL COMMENT 'object id',
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT 'menu item visibility',
   `class` varchar(61) DEFAULT NULL COMMENT 'menu item class',
