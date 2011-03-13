@@ -21,7 +21,8 @@
 	<ul>
 <?php foreach($tree as $node):?>
 		<li>
-			<?php echo ($node->visible) ? '&diams;' : '&loz;'?> <?php echo $node->name?>
+			<?php echo ($node->visible) ? '&diams;' : '&loz;'?> <?php echo HTML::anchor('menu/tree/' . $node->id, $node->name)?>
+			|
 			<span class="insertions">
 				<?php echo HTML::anchor('menu/add/node' . URL::query(array('root' => $root->id, 'prev' => $node->id)), __('вставить до'))?>
 				<?php echo HTML::anchor('menu/add/node' . URL::query(array('root' => $node->id)), __('добавить дочерний элемент'))?>
