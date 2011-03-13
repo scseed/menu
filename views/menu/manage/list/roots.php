@@ -7,4 +7,4 @@ Roots
 <?php endforeach;?>
 	</ul>
 </div>
-<?php echo HTML::anchor('menu/add/root', 'Создать новое дерево')?>
+<?php echo HTML::anchor('menu/add/root', __('Создать новое дерево'))?>

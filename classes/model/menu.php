@@ -5,7 +5,7 @@
  * Implements MPTT functionality
  *
  * @package Menu
- * @author  avis <smgladkovskiy@gmail.com>
+ * @author  Sergei Gladkovskiy <smgladkovskiy@gmail.com>
  */
 class Model_Menu extends Jelly_Model_MPTT {
 
@@ -51,7 +51,9 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'allow_null' => TRUE,
 				)),
 				'visible' => Jelly::field('Boolean', array(
-					'default' => TRUE
+					'default' => TRUE,
+					'true_label' => __('виден'),
+					'false_label' => __('не виден'),
 				)),
 				'class' => Jelly::field('String'),
 			));

@@ -1,22 +1,37 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
 /**
-* Class Menu
-*
-* @package Menu
-* @author  avis <smgladkovskiy@gmail.com>
-*/
+ * Class Menu
+ *
+ * @package Menu
+ * @author  Sergei Gladkovskiy <smgladkovskiy@gmail.com>
+ */
 abstract class Menu_Core {
 
-	// Instance storage
+	/**
+	 * Instance storage
+	 *
+	 * @var array
+	 */
 	protected static $instances;
 
-	// Menu views path
+	/**
+	 * Menu views path
+	 *
+	 * @var string
+	 */
 	protected $_views_path = 'menu';
 
-	// Active menu anchor class name
+	/**
+	 * Active menu anchor class name
+	 *
+	 * @var string
+	 */
 	protected $_active_class = 'active';
 
+	/**
+	 * @var string
+	 */
 	protected $_destination;
 
 	/**
@@ -45,6 +60,9 @@ abstract class Menu_Core {
 		return self::$instances[$destination];
 	}
 
+	/**
+	 * @param string $destination
+	 */
 	public function __construct($destination)
 	{
 		$this->_destination = $destination;
@@ -292,35 +310,6 @@ abstract class Menu_Core {
 //		}
 //
 		return TRUE;
-	}
-
-	protected function _menu_fullfill()
-	{
-	//		$new_children = Jelly::factory('menu')->set(array(
-	//			'title' => 'Партнёры',
-	//			'controller' => 'partners',
-	//		))->insert_as_last_child($_menu);
-
-	//	    exit(Kohana::debug($new_children));
-//		    $new_root = Jelly::factory('menu')->set(array(
-//				'name' => 'top',
-//			    'title' => NULL,
-//			    'directory' => NULL,
-//			    'visible' => FALSE,
-//			))->insert_as_new_root();
-
-
-	//		$deleted = Jelly::select('menu')->load(18)->delete_obj();
-//			$root = Jelly::query('menu', 1)->select();
-			$neighbor = Jelly::query('menu', 6)->select();
-			$new_directory = Jelly::factory('menu')->set(array(
-				'title' => 'База знаний',
-//				'action' => NULL,
-				'controller' => 'partners',
-				'route_name' => 'faq',
-				'visible' => 1
-			))->insert_as_next_sibling($neighbor);
-	//		$im_ex = Jelly::select('menu')->load(12)->move_to_prev_sibling(10);
 	}
 
 	/**

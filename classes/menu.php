@@ -4,7 +4,7 @@
  * Class Menu
  *
  * @package Menu
- * @author  avis <smgladkovskiy@gmail.com>
+ * @author  Sergei Gladkovskiy <smgladkovskiy@gmail.com>
  */
 class Menu extends Menu_Core{
 

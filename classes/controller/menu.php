@@ -3,7 +3,7 @@
 /**
  * Template Controller menu
  *
- * @author Sergei Gladkovskiy <smgladkovskiy@gmail.com>
- * @copyrignt
+ * @package Menu
+ * @author  Sergei Gladkovskiy <smgladkovskiy@gmail.com>
  */
 class Controller_Menu extends Controller_Core_Menu {}
