@@ -56,6 +56,68 @@ abstract class Controller_Core_Menu extends Controller_Template {
 	}
 
 	/**
+	 * @throws Http_Exception_404|Validation_Exception
+	 * @return void
+	 */
+	public function action_edit()
+	{
+		$node_id = $this->request->param('id');
+
+		if( ! $node_id)
+			throw new Http_Exception_404('Node id is not specified');
+
+		$node = Jelly::query('menu', $node_id)->select();
+
+		$back  = $this->request->referrer();
+		$_post = array(
+			'name' => $node->name,
+			'route_name' => $node->route_name,
+			'directory' => $node->directory,
+			'controller' => $node->controller,
+			'action' => $node->action,
+			'visible' => $node->visible,
+		);
+
+		$visibilities = array(
+			1 => __('виден'),
+			0 => __('не виден'),
+		);
+		if($_POST)
+		{
+			$post = Arr::extract($_POST, array_keys($_post));
+
+			$node->set($post);
+
+			try
+			{
+				$node->save();
+
+				$link = ($node->parent()->id) ? 'menu/tree/'.$node->parent()->id : 'menu';
+				$this->request->redirect($link);
+			}
+			catch(Validation_Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		if(isset($post))
+		{
+			$post = Arr::merge($_post, $post);
+		}
+		else
+		{
+			$post = $_post;
+		}
+
+		$this->template->content = View::factory('menu/manage/edit')
+			->bind('visibilities', $visibilities)
+			->bind('node', $node)
+			->bind('back', $back)
+			->bind('post', $post);
+	}
+
+	/**
 	 * @throws Http_Exception_404
 	 * @return void
 	 */
@@ -151,6 +213,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 	}
 
 	/**
+	 * @throws Validation_Exception
 	 * @return Kohana_View
 	 */
 	protected function _add_root()
@@ -183,7 +246,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 			}
 			catch(Validation_Exception $e)
 			{
-				$errors = $e->array->errors('common_validation');
+				throw $e;
 				$post   = Arr::merge($_post, $post);
 			}
 		}
@@ -199,6 +262,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 	}
 
 	/**
+	 * @throws Validation_Exception
 	 * @return Kohana_View
 	 */
 	protected function _add_node()
@@ -249,11 +313,9 @@ abstract class Controller_Core_Menu extends Controller_Template {
 			}
 			catch(Validation_Exception $e)
 			{
-				$errors = $e->array->errors('common_validation');
-				$post   = Arr::merge($_post, $post);
+				throw $e;
+				$post = Arr::merge($_post, $post);
 			}
-
-			$post = Arr::merge($_post, $post);
 		}
 
 		if(!isset($post))

@@ -32,6 +32,7 @@
 				|
 				<?php echo HTML::anchor('menu/move/' . $node->id . URL::query(array('direction' => 'up')), '&uarr;', array('title' => __('переместить вверх')))?>
 				<?php echo HTML::anchor('menu/move/' . $node->id . URL::query(array('direction' => 'down')), '&darr;', array('title' => __('переместить вниз')))?>
+				<?php echo HTML::anchor('menu/edit/' . $node->id, '&curren;', array('title' => __('править')))?>
 				<?php echo HTML::anchor('menu/delete/' . $node->id, 'x', array('title' => __('удалить')))?>
 			</span>
 		</li>
