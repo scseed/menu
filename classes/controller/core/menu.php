@@ -33,7 +33,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		if( ! $root->loaded())
 			throw new Http_Exception_404('Root node with id = :id was not found', array(':id' => $root_id));
 
-		$tree = $root->descendants();
+		$tree = $root->descendants(FALSE, 'ASC', TRUE);
 
 		$this->template->content = View::factory('menu/manage/tree')
 			->bind('root', $root)
@@ -69,12 +69,28 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$node = Jelly::query('menu', $node_id)->select();
 
 		$back  = $this->request->referrer();
+
+//		exit(Debug::vars($node->params) . View::factory('profiler/stats'));
+
+		$model_params = ($node->params) ? $node->params : NULL;
+
+		if($model_params !== NULL)
+		{
+			foreach($node->params as $name => $value)
+			{
+				$params[] = $name . '=' . $value;
+			}
+		}
+
 		$_post = array(
 			'name' => $node->name,
+			'title' => $node->title,
 			'route_name' => $node->route_name,
 			'directory' => $node->directory,
 			'controller' => $node->controller,
 			'action' => $node->action,
+			'params' => ($model_params) ? implode(';', $params) : NULL,
+			'query' => $node->query,
 			'visible' => $node->visible,
 		);
 
@@ -85,6 +101,16 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		if($_POST)
 		{
 			$post = Arr::extract($_POST, array_keys($_post));
+
+			$_params = ($post['params']) ? explode(';', $post['params']) : array();
+
+			$params = array();
+			foreach($_params as $param_string)
+			{
+				$params += array(strstr($param_string, '=', TRUE) => str_replace('=', '', strstr($param_string, '=')));
+			}
+
+			$post['params'] = $params;
 
 			$node->set($post);
 
@@ -277,9 +303,13 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 		$_post = array(
 			'name' => NULL,
+			'title' => NULL,
 			'route_name' => ($root) ? $root->route_name : NULL,
+			'directory' => NULL,
 			'controller' => NULL,
 			'action' => NULL,
+			'params' => NULL,
+			'query' => NULL,
 			'visible' => TRUE,
 		);
 		$visibilities = array(
@@ -291,6 +321,16 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		{
 			$post     = Arr::extract($_POST, array_keys($_post));
 			$new_node = Jelly::factory('menu');
+
+			$_params = ($post['params']) ? explode(';', $post['params']) : array();
+
+			$params = array();
+			foreach($_params as $param_string)
+			{
+				$params += array(strstr($param_string, '=', TRUE) => str_replace('=', '', strstr($param_string, '=')));
+			}
+
+			$post['params'] = $params;
 
 			$new_node->set($post);
 

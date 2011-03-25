@@ -46,7 +46,7 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'default' => NULL,
 					'allow_null' => TRUE,
 				)),
-				'object_id' => Jelly::field('String', array(
+				'query' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
 				)),
