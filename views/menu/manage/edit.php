@@ -1,5 +1,5 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');?>
-<?php echo Form::open('menu/edit/'.$node->id)?>
+<?php echo Form::open(Request::current())?>
 	<legend><?php echo __('Правка элемента')?> "<?php echo $node->name?>"</legend>
 
 	<div class="form_item">

@@ -52,7 +52,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 		$this->template->content = (method_exists(__CLASS__, $method))
 			? $this->{$method}($root)
-			: $this->request->redirect('menu');
+			: $this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
 	}
 
 	/**
@@ -69,8 +69,6 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$node = Jelly::query('menu', $node_id)->select();
 
 		$back  = $this->request->referrer();
-
-//		exit(Debug::vars($node->params) . View::factory('profiler/stats'));
 
 		$model_params = ($node->params) ? $node->params : NULL;
 
@@ -118,7 +116,9 @@ abstract class Controller_Core_Menu extends Controller_Template {
 			{
 				$node->save();
 
-				$link = ($node->parent()->id) ? 'menu/tree/'.$node->parent()->id : 'menu';
+				$link = ($node->parent()->id)
+					? Request::current()->uri(array('controller' => 'menu','action' => 'tree','id' => $node->parent()->id))
+					: Request::current()->uri(array('controller' => 'menu','action' => '','id' => NULL));
 				$this->request->redirect($link);
 			}
 			catch(Validation_Exception $e)
@@ -232,7 +232,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		}
 		catch(Validation_Exception $e)
 		{
-			throw $e;
+			throw new Kohana_Exception($e);
 		}
 
 		$this->request->redirect($this->request->referrer());
@@ -268,18 +268,21 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 				$new_root->insert_as_new_root($scope + 1);
 
-				$this->request->redirect('menu');
+				$this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
 			}
 			catch(Validation_Exception $e)
 			{
-				throw $e;
-				$post   = Arr::merge($_post, $post);
+				throw new Kohana_Exception($e);
 			}
 		}
 
 		if(!isset($post))
 		{
 			$post = $_post;
+		}
+		else
+		{
+			$post = Arr::merge($_post, $post);
 		}
 
 		return View::factory('menu/manage/add/root')
@@ -349,18 +352,27 @@ abstract class Controller_Core_Menu extends Controller_Template {
 					$new_node->insert_as_first_child($root);
 				}
 
-				$this->request->redirect('menu/tree/'.$root->id);
+				$this->request->redirect(
+					Request::current()->uri(array(
+						'controller' => 'menu',
+						'action' => 'tree',
+						'id' => $root->id
+					))
+				);
 			}
 			catch(Validation_Exception $e)
 			{
-				throw $e;
-				$post = Arr::merge($_post, $post);
+				throw new Kohana_Exception($e);
 			}
 		}
 
 		if(!isset($post))
 		{
 			$post = $_post;
+		}
+		else
+		{
+			$post = Arr::merge($_post, $post);
 		}
 
 		return View::factory('menu/manage/add/node')
@@ -369,7 +381,5 @@ abstract class Controller_Core_Menu extends Controller_Template {
 			->bind('post', $post)
 			->bind('back', $back);
 	}
-
-
 
 } // End Controller_Core_Menu

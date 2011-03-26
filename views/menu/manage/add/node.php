@@ -1,5 +1,5 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');?>
-<?php echo Form::open('menu/add/node'.URL::query())?>
+<?php echo Form::open(Request::current()->uri().URL::query())?>
 	<legend><?php echo __('Создание нового элемента раздела')?> "<?php echo $root->name?>"</legend>
 
 	<div class="form_item">
