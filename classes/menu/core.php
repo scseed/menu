@@ -81,7 +81,7 @@ abstract class Menu_Core {
 
 		// Ignore Lang and Id params
 		unset($_params['lang']);
-		unset($_params['id']);
+//		unset($_params['id']);
 
 		$_params = ($_params) ? serialize($_params) : '';
 		$current_request_params = array(
@@ -230,13 +230,33 @@ abstract class Menu_Core {
 	 * @param  string $active_menu
 	 * @return string $parent
 	 */
-	protected function _find_parent(array & $menu_array, $active_menu = NULL)
+	protected function _find_parent(array $menu_array, $active_menu = NULL)
 	{
 		static $parent;
+		static $current_is_query = FALSE;
+
+		if(preg_match('/\?/', $active_menu))
+		{
+			$current_is_query = TRUE;
+		}
+
+		$query = FALSE;
 
 		foreach($menu_array as $name => $item)
 		{
-			if ($name == $active_menu)
+			if(preg_match('/(\?|\&)/', $name))
+			{
+				$query = TRUE;
+			}
+
+			$active_menu_name = $active_menu;
+
+			if($query === FALSE AND $current_is_query === TRUE)
+			{
+				$active_menu_name = strstr($active_menu, '?', TRUE);
+			}
+
+			if ($name == $active_menu_name)
 			{
 				$parent = $item['parent'];
 			}
@@ -262,10 +282,17 @@ abstract class Menu_Core {
 	{
 		static $current;
 
-		$href = Request::current()->uri().URL::query();
+		$href = Request::current()->uri();
+		$query = NULL;
 		foreach($menu as $name => $item)
 		{
-			if($item['href'] == $href AND $name != $item['parent'])
+			if(preg_match('/(?|&)/', $item['href']))
+			{
+				$query = URL::query();
+				exit(Debug::vars($item['href']) . View::factory('profiler/stats'));
+			}
+
+			if($item['href'] == $href.$query AND $name != $item['parent'])
 			{
 				$current = $name;
 			}
