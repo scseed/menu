@@ -81,7 +81,8 @@ abstract class Menu_Core {
 
 		// Ignore Lang and Id params
 		unset($_params['lang']);
-//		unset($_params['id']);
+		if((int) Arr::get($_params, 'id', NULL) > 0)
+			unset($_params['id']);
 
 		$_params = ($_params) ? serialize($_params) : '';
 		$current_request_params = array(

@@ -22,10 +22,12 @@ class Model_Menu extends Jelly_Model_MPTT {
 				'name' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 			    'title' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+				    'convert_empty' => TRUE,
 				)),
 				'route_name' => Jelly::field('String', array(
 					'default' => 'default'
@@ -33,29 +35,38 @@ class Model_Menu extends Jelly_Model_MPTT {
 				'directory' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 				'controller' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 				'action' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 				'params' => Jelly::field('Serialized', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 				'query' => Jelly::field('String', array(
 					'default' => NULL,
 					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
 				)),
 				'visible' => Jelly::field('Boolean', array(
 					'default' => TRUE,
 					'true_label' => __('виден'),
 					'false_label' => __('не виден'),
 				)),
-				'class' => Jelly::field('String'),
+				'class' => Jelly::field('String', array(
+					'default' => NULL,
+					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
+				)),
 			));
 	    parent::initialize($meta);
 	}

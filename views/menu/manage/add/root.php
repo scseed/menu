@@ -1,5 +1,5 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');?>
-<?php echo Form::open('menu/add/root')?>
+<?php echo Form::open(Request::current())?>
 	<legend><?php echo __('Создание корня нового дерева')?></legend>
 
 	<div class="form_item">
