@@ -152,11 +152,11 @@ abstract class Menu_Core {
 			$menu_item_to_set_active = Arr::get($menu, $active_menu_item);
 			if($menu_item_to_set_active)
 			{
-				$menu[$active_menu_item]['class'] = $this->_active_class;
+				$menu[$active_menu_item]['active_class'] = $this->_active_class;
 			}
 
 			if($active_submenu_item)
-				$menu[$active_menu_item]['submenu'][$active_submenu_item]['class'] = $this->_active_class;
+				$menu[$active_menu_item]['submenu'][$active_submenu_item]['active_class'] = $this->_active_class;
 
 			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
 		}
@@ -208,13 +208,14 @@ abstract class Menu_Core {
 			}
 
 			$menu[$item_name] = array(
-				'parent'    => $parent_name,                                            // parent lavel name
-				'title'     => __(Arr::get($menu_item, 'title', '')),                   // anchor title
-				'href'      => $href,                                                   // anchor href
-				'class'     => Arr::get($menu_item, 'class', NULL),                     // anchor class name
-				'directory' => $route_name,                                             // route directory
-				'visible'   => Arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
-				'submenu'   => ( ! empty($menu_item['submenu']))                        // submenu
+				'parent'       => $parent_name,                                            // parent lavel name
+				'title'        => __(Arr::get($menu_item, 'title', '')),                   // anchor title
+				'href'         => $href,                                                   // anchor href
+				'class'        => Arr::get($menu_item, 'class', NULL),                     // anchor class name
+				'active_class' => NULL,                                                    // active class name
+				'directory'    => $route_name,                                             // route directory
+				'visible'      => Arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
+				'submenu'      => ( ! empty($menu_item['submenu']))                        // submenu
 				                ? $this->_gen_menu($menu_item['submenu'], $parent_name)
 				                : array(),
 			);

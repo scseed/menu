@@ -57,6 +57,11 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'allow_null' => TRUE,
 					'convert_empty' => TRUE,
 				)),
+				'class' => Jelly::field('String', array(
+					'default' => NULL,
+					'allow_null' => TRUE,
+					'convert_empty' => TRUE,
+				)),
 				'visible' => Jelly::field('Boolean', array(
 					'default' => TRUE,
 					'true_label' => __('виден'),

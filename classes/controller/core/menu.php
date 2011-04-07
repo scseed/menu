@@ -52,7 +52,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 		$this->template->content = (method_exists(__CLASS__, $method))
 			? $this->{$method}($root)
-			: $this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
+			: $this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '', 'id' => '')));
 	}
 
 	/**
@@ -268,7 +268,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 				$new_root->insert_as_new_root($scope + 1);
 
-				$this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
+				$this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '', 'id' => '')));
 			}
 			catch(Validation_Exception $e)
 			{
@@ -313,6 +313,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 			'action' => NULL,
 			'params' => NULL,
 			'query' => NULL,
+			'class' => NULL,
 			'visible' => TRUE,
 		);
 		$visibilities = array(

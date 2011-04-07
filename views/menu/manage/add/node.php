@@ -35,6 +35,10 @@
 	<?php echo Form::input('query', $post['query'], array('id' => 'menu_query'))?>
 	</div>
 	<div class="form_item">
+	<?php echo Form::label('menu_class', __('Class пункта меню'))?>
+	<?php echo Form::input('class', $post['class'], array('id' => 'menu_class'))?>
+	</div>
+	<div class="form_item">
 	<?php echo Form::label('menu_controller', __('Статус видимости'))?>
 	<?php echo Form::select('visible', $visibilities, $post['visible'], array('id' => 'menu_visible'))?>
 	</div>
