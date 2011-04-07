@@ -83,12 +83,14 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$_post = array(
 			'name' => $node->name,
 			'title' => $node->title,
+			'anchor_title' => $node->anchor_title,
 			'route_name' => $node->route_name,
 			'directory' => $node->directory,
 			'controller' => $node->controller,
 			'action' => $node->action,
 			'params' => ($model_params) ? implode(';', $params) : NULL,
 			'query' => $node->query,
+			'class' => $node->class,
 			'visible' => $node->visible,
 		);
 
@@ -307,6 +309,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$_post = array(
 			'name' => NULL,
 			'title' => NULL,
+			'anchor_title' => NULL,
 			'route_name' => ($root) ? $root->route_name : NULL,
 			'directory' => NULL,
 			'controller' => NULL,

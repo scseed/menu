@@ -210,6 +210,7 @@ abstract class Menu_Core {
 			$menu[$item_name] = array(
 				'parent'       => $parent_name,                                            // parent lavel name
 				'title'        => __(Arr::get($menu_item, 'title', '')),                   // anchor title
+				'anchor_title' => __(Arr::get($menu_item, 'anchor_title', NULL)),          // anchor long title
 				'href'         => $href,                                                   // anchor href
 				'class'        => Arr::get($menu_item, 'class', NULL),                     // anchor class name
 				'active_class' => NULL,                                                    // active class name

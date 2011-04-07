@@ -11,6 +11,10 @@
 	<?php echo Form::input('title', $post['title'], array('id' => 'menu_title'))?>
 	</div>
 	<div class="form_item">
+	<?php echo Form::label('menu_anchor_title', __('Расширенный заголовок пункта меню'))?>
+	<?php echo Form::input('anchor_title', $post['anchor_title'], array('id' => 'menu_anchor_title'))?>
+	</div>
+	<div class="form_item">
 	<?php echo Form::label('menu_route_name', __('Наименование роута'))?>
 	<?php echo Form::input('route_name', $post['route_name'], array('id' => 'menu_route_name'))?>
 	</div>

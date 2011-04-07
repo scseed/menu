@@ -29,6 +29,11 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'allow_null' => TRUE,
 				    'convert_empty' => TRUE,
 				)),
+			    'anchor_title' => Jelly::field('String', array(
+					'default' => NULL,
+					'allow_null' => TRUE,
+				    'convert_empty' => TRUE,
+				)),
 				'route_name' => Jelly::field('String', array(
 					'default' => 'default'
 				)),
