@@ -52,7 +52,7 @@ abstract class Menu_Core {
 			$menu_class = 'Menu';
 		}
 
-		if( self::$instances[$destination] === NULL)
+		if( Arr::get(self::$instances, $destination, NULL) === NULL)
 		{
 			self::$instances[$destination] = new $menu_class($destination);
 		}
