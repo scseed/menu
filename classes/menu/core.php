@@ -184,7 +184,7 @@ abstract class Menu_Core {
 			$route_defaults = $route->get_defaults();
 
 			$params = array(
-				'lang'          => I18n::lang(),
+				'lang'          => Arr::get($menu_item, 'lang', NULL),
 				'directory'     => Arr::get($menu_item, 'directory', NULL),
 				'controller'    => Arr::get($menu_item, 'controller', NULL),
 				'action'        => Arr::get($menu_item, 'action', NULL),
