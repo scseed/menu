@@ -183,6 +183,8 @@ abstract class Menu_Core {
 			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
 
+			$host = Arr::get($route_defaults, 'host', FALSE);
+
 			$params = array(
 				'lang'          => I18n::lang(),
 				'directory'     => Arr::get($menu_item, 'directory', NULL),
@@ -191,7 +193,9 @@ abstract class Menu_Core {
 			);
 			$params += Arr::get($menu_item, 'params', array());
 
-			$href = $route->uri($params) . Arr::get($menu_item, 'query', NULL);
+			$href = ($host === FALSE)
+				? $route->uri($params) . Arr::get($menu_item, 'query', NULL)
+				: $host;
 
 			if( ! $this->_access_check($route_name,	Arr::get($menu_item, 'controller', $route_defaults['controller'])))
 			{
