@@ -52,7 +52,7 @@ abstract class Menu_Core {
 			$menu_class = 'Menu';
 		}
 
-		if( self::$instances[$destination] === NULL)
+		if( Arr::get(self::$instances, $destination, NULL) === NULL)
 		{
 			self::$instances[$destination] = new $menu_class($destination);
 		}
@@ -152,11 +152,11 @@ abstract class Menu_Core {
 			$menu_item_to_set_active = Arr::get($menu, $active_menu_item);
 			if($menu_item_to_set_active)
 			{
-				$menu[$active_menu_item]['class'] = $this->_active_class;
+				$menu[$active_menu_item]['active_class'] = $this->_active_class;
 			}
 
 			if($active_submenu_item)
-				$menu[$active_menu_item]['submenu'][$active_submenu_item]['class'] = $this->_active_class;
+				$menu[$active_menu_item]['submenu'][$active_submenu_item]['active_class'] = $this->_active_class;
 
 			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
 		}
@@ -186,7 +186,7 @@ abstract class Menu_Core {
 			$host = Arr::get($route_defaults, 'host', FALSE);
 
 			$params = array(
-				'lang'          => I18n::lang(),
+				'lang'          => Arr::get($menu_item, 'lang', NULL),
 				'directory'     => Arr::get($menu_item, 'directory', NULL),
 				'controller'    => Arr::get($menu_item, 'controller', NULL),
 				'action'        => Arr::get($menu_item, 'action', NULL),
@@ -212,13 +212,15 @@ abstract class Menu_Core {
 			}
 
 			$menu[$item_name] = array(
-				'parent'    => $parent_name,                                            // parent lavel name
-				'title'     => __(Arr::get($menu_item, 'title', '')),                   // anchor title
-				'href'      => $href,                                                   // anchor href
-				'class'     => Arr::get($menu_item, 'class', NULL),                     // anchor class name
-				'directory' => $route_name,                                             // route directory
-				'visible'   => Arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
-				'submenu'   => ( ! empty($menu_item['submenu']))                        // submenu
+				'parent'       => $parent_name,                                            // parent lavel name
+				'title'        => __(Arr::get($menu_item, 'title', '')),                   // anchor title
+				'anchor_title' => __(Arr::get($menu_item, 'anchor_title', NULL)),          // anchor long title
+				'href'         => $href,                                                   // anchor href
+				'class'        => Arr::get($menu_item, 'class', NULL),                     // anchor class name
+				'active_class' => NULL,                                                    // active class name
+				'directory'    => $route_name,                                             // route directory
+				'visible'      => Arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
+				'submenu'      => ( ! empty($menu_item['submenu']))                        // submenu
 				                ? $this->_gen_menu($menu_item['submenu'], $parent_name)
 				                : array(),
 			);

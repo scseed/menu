@@ -52,7 +52,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 		$this->template->content = (method_exists(__CLASS__, $method))
 			? $this->{$method}($root)
-			: $this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
+			: $this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '', 'id' => '')));
 	}
 
 	/**
@@ -83,12 +83,14 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$_post = array(
 			'name' => $node->name,
 			'title' => $node->title,
+			'anchor_title' => $node->anchor_title,
 			'route_name' => $node->route_name,
 			'directory' => $node->directory,
 			'controller' => $node->controller,
 			'action' => $node->action,
 			'params' => ($model_params) ? implode(';', $params) : NULL,
 			'query' => $node->query,
+			'class' => $node->class,
 			'visible' => $node->visible,
 		);
 
@@ -268,7 +270,7 @@ abstract class Controller_Core_Menu extends Controller_Template {
 
 				$new_root->insert_as_new_root($scope + 1);
 
-				$this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '')));
+				$this->request->redirect(Request::current()->uri(array('controller' => 'menu', 'action' => '', 'id' => '')));
 			}
 			catch(Validation_Exception $e)
 			{
@@ -307,12 +309,14 @@ abstract class Controller_Core_Menu extends Controller_Template {
 		$_post = array(
 			'name' => NULL,
 			'title' => NULL,
+			'anchor_title' => NULL,
 			'route_name' => ($root) ? $root->route_name : NULL,
 			'directory' => NULL,
 			'controller' => NULL,
 			'action' => NULL,
 			'params' => NULL,
 			'query' => NULL,
+			'class' => NULL,
 			'visible' => TRUE,
 		);
 		$visibilities = array(
