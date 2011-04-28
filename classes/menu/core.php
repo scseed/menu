@@ -37,6 +37,8 @@ abstract class Menu_Core {
 	/**
 	 * Menu instance
 	 *
+	 * @static
+	 * @param string $destination
 	 * @return object Menu
 	 */
 	public static function factory($destination = 'default')
@@ -72,14 +74,15 @@ abstract class Menu_Core {
 	 * Building menu
 	 * By defaults generate two level menu
 	 *
-	 * @return string View
+	 * @param string $type
+	 * @return Kohana_View|null
 	 */
 	public function generate($type = 'top')
 	{
 		$current_request = Request::current();
 		$_params = $current_request->param();
 
-		// Ignore Lang and Id params
+		// Ignore Lang param
 		unset($_params['lang']);
 		if((int) Arr::get($_params, 'id', NULL) > 0)
 			unset($_params['id']);
@@ -157,6 +160,8 @@ abstract class Menu_Core {
 
 			if($active_submenu_item)
 				$menu[$active_menu_item]['submenu'][$active_submenu_item]['active_class'] = $this->_active_class;
+
+			$menu = $this->_clear_hidden($menu);
 
 			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
 		}
@@ -363,5 +368,30 @@ abstract class Menu_Core {
 			->where('route_name', '=', $this->_destination)
 			->limit(1)
 			->select();
+	}
+
+	/**
+	 * Recursively clears hidden menu items
+	 *
+	 * @param array $menu_array
+	 * @return array
+	 */
+	protected function _clear_hidden(array $menu_array)
+	{
+		$_menu = array();
+		foreach($menu_array as $path => $menu)
+		{
+			if($menu['visible'] === TRUE)
+			{
+				$_menu[$path] = $menu;
+			}
+
+			if($menu['submenu'])
+			{
+				$_menu[$path]['submenu'] = $this->_clear_hidden($menu['submenu']);
+			}
+		}
+
+		return $_menu;
 	}
 } // End Menu_Core
