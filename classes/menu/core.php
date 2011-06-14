@@ -133,7 +133,7 @@ abstract class Menu_Core {
 					$action     = ($subchild->action)     ? $subchild->action            : $route_defaults['action'];
 					$params     = ($subchild->params)     ? serialize($subchild->params) : NULL;
 					$query      = ($subchild->query)      ? $subchild->query             : NULL;
-					$sub_key    = implode('_', array($child->route_name, $directory, $controller, $action, $params, $query));
+					$sub_key    = implode('_', array($subchild->route_name, $directory, $controller, $action, $params, $query));
 
 					$menu[$key]['submenu'][$sub_key]            = $subchild->as_array();
 					$menu[$key]['submenu'][$sub_key]['parent']  = $key;
