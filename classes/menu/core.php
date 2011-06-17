@@ -23,6 +23,13 @@ abstract class Menu_Core {
 	protected $_views_path = 'menu';
 
 	/**
+	 * Menu views path
+	 *
+	 * @var string
+	 */
+	protected $_lang_icons_path = 'i/icons/';
+
+	/**
 	 * Active menu anchor class name
 	 *
 	 * @var string
@@ -68,6 +75,23 @@ abstract class Menu_Core {
 	public function __construct($destination)
 	{
 		$this->_destination = $destination;
+	}
+
+	public function lang()
+	{
+		$languages = Jelly::query('system_lang')->active()->select();
+		$current_lang = I18n::lang();
+		$icons = NULL;
+
+		foreach($languages as $language)
+		{
+			$icons[$language->abbr] = $this->_lang_icons_path.$language->abbr.'.png';
+		}
+
+		return View::factory($this->_views_path.DIRECTORY_SEPARATOR.'lang')
+			->bind('languages', $languages)
+			->bind('icons', $icons)
+			->bind('current_lang', $current_lang);
 	}
 
 	/**
