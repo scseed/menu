@@ -79,7 +79,15 @@ abstract class Menu_Core {
 
 	public function lang()
 	{
-		$languages = Jelly::query('system_lang')->active()->select();
+		if(class_exists('Page'))
+		{
+			$languages = Page::instance()->system_langs_object();
+		}
+		else
+		{
+			$languages = Jelly::query('system_lang')->active()->select();
+		}
+
 		$current_lang = I18n::lang();
 		$icons = NULL;
 
