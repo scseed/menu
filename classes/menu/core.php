@@ -120,59 +120,25 @@ abstract class Menu_Core {
 			unset($_params['id']);
 
 		$_params = ($_params) ? serialize($_params) : '';
+		$query = preg_replace('/lang=([a-z]{2})/', NULL, URL::query());
+		$query = ($query == '?') ? NULL : $query;
+		
 		$current_request_params = array(
 			Route::name($current_request->route()),
 			$current_request->directory(),
 			$current_request->controller(),
 			$current_request->action(),
 			$_params,
-			URL::query(),
+			$query,
 		);
 
 		$active_menu = implode('_', $current_request_params);
 
-		$_menu = $this->_get_root($type);
+		// Overriding page->home to home->index path
+		if($active_menu == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
+			$active_menu = 'default__home_index__';
 
-		$menu_child = $_menu->children();
-
-		$menu = array();
-		foreach($menu_child as $child)
-		{
-			$route          = Route::get($child->route_name);
-			$route_defaults = $route->get_defaults();
-
-			$directory  = ($child->directory)  ? $child->directory         : Arr::get($route_defaults, 'directory', NULL);
-			$controller = ($child->controller) ? $child->controller        : $route_defaults['controller'];
-			$action     = ($child->action)     ? $child->action            : $route_defaults['action'];
-			$params     = ($child->params)     ? serialize($child->params) : NULL;
-			$query      = ($child->query)      ? $child->query             : NULL;
-			$key        = implode('_', array($child->route_name, $directory, $controller, $action, $params, $query));
-
-			$menu[$key]             = $child->as_array();
-			$menu[$key]['parent']   = $key;
-			$menu[$key]['title']    = $child->title;
-			if($child->has_children())
-			{
-				$subchilds = $child->children();
-
-				foreach($subchilds as $subchild)
-				{
-					$route          = Route::get($subchild->route_name);
-					$route_defaults = $route->get_defaults();
-
-					$directory  = ($subchild->directory)  ? $subchild->directory         : Arr::get($route_defaults, 'directory', NULL);
-					$controller = ($subchild->controller) ? $subchild->controller        : $route_defaults['controller'];
-					$action     = ($subchild->action)     ? $subchild->action            : $route_defaults['action'];
-					$params     = ($subchild->params)     ? serialize($subchild->params) : NULL;
-					$query      = ($subchild->query)      ? $subchild->query             : NULL;
-					$sub_key    = implode('_', array($subchild->route_name, $directory, $controller, $action, $params, $query));
-
-					$menu[$key]['submenu'][$sub_key]            = $subchild->as_array();
-					$menu[$key]['submenu'][$sub_key]['parent']  = $key;
-					$menu[$key]['submenu'][$sub_key]['title']   = $subchild->title;;
-				}
-			}
-		}
+		$menu = Page::instance()->pages_structure();
 
 		if($menu)
 		{
@@ -184,14 +150,13 @@ abstract class Menu_Core {
 			$active_submenu_item = $this->_find_current($menu);
 
 			// Marking active menu item by setting active class to it
-			$menu_item_to_set_active = Arr::get($menu, $active_menu_item);
-			if($menu_item_to_set_active)
+			if(Arr::get($menu, $active_menu_item, FALSE))
 			{
 				$menu[$active_menu_item]['active_class'] = $this->_active_class;
 			}
 
-			if($active_submenu_item)
-				$menu[$active_menu_item]['submenu'][$active_submenu_item]['active_class'] = $this->_active_class;
+			if($active_submenu_item AND $active_submenu_item != $active_menu_item)
+				$menu[$active_menu_item]['childrens'][$active_submenu_item]['active_class'] = $this->_active_class;
 
 			$menu = $this->_clear_hidden($menu);
 
@@ -214,8 +179,9 @@ abstract class Menu_Core {
 	protected function _gen_menu(array $menu_array, $parent = NULL)
 	{
 		$menu = array();
-		foreach($menu_array as $item_name => $menu_item)
+		foreach($menu_array as $id => $menu_item)
 		{
+			$item_name      = $menu_item['key'];
 			$route_name     = Arr::get($menu_item, 'route_name', 'default');
 			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
@@ -236,7 +202,8 @@ abstract class Menu_Core {
 				'controller'    => Arr::get($menu_item, 'controller', NULL),
 				'action'        => Arr::get($menu_item, 'action', NULL),
 			);
-			$params += Arr::get($menu_item, 'params', array());
+
+			$params += unserialize(Arr::get($menu_item, 'params', array()));
 
 			$href = ($host === FALSE)
 				? $route->uri($params) . Arr::get($menu_item, 'query', NULL)
@@ -247,26 +214,17 @@ abstract class Menu_Core {
 				continue;
 			}
 
-			if($parent === NULL)
-			{
-				$parent_name = $item_name;
-			}
-			else
-			{
-				$parent_name = $parent;
-			}
-
 			$menu[$item_name] = array(
-				'parent'       => $parent_name,                                            // parent lavel name
+				'parent'       => $parent,                                            // parent lavel name
 				'title'        => __(Arr::get($menu_item, 'title', '')),                   // anchor title
 				'anchor_title' => __(Arr::get($menu_item, 'anchor_title', NULL)),          // anchor long title
 				'href'         => $href,                                                   // anchor href
 				'class'        => Arr::get($menu_item, 'class', NULL),                     // anchor class name
 				'active_class' => NULL,                                                    // active class name
 				'directory'    => $route_name,                                             // route directory
-				'visible'      => Arr::get($menu_item, 'visible', TRUE),                   // anchor visibility
-				'submenu'      => ( ! empty($menu_item['submenu']))                        // submenu
-				                ? $this->_gen_menu($menu_item['submenu'], $parent_name)
+				'is_visible'      => Arr::get($menu_item, 'is_visible', TRUE),             // anchor visibility
+				'childrens'      => ( ! empty($menu_item['childrens']))                    // submenu
+				                ? $this->_gen_menu($menu_item['childrens'], $item_name)
 				                : array(),
 			);
 
@@ -310,12 +268,12 @@ abstract class Menu_Core {
 
 			if ($name == $active_menu_name)
 			{
-				$parent = $item['parent'];
+				$parent = ($item['parent']) ? $item['parent'] : $name;
 			}
 
-			if(! empty($item['submenu']))
+			if(! $parent AND ! empty($item['childrens']))
 			{
-				$parent = $this->_find_parent($item['submenu'], $active_menu);
+				$parent = $this->_find_parent($item['childrens'], $active_menu_name);
 			}
 		}
 
@@ -336,6 +294,7 @@ abstract class Menu_Core {
 
 		$href = Request::current()->uri();
 		$query = NULL;
+
 		foreach($menu as $name => $item)
 		{
 			if(preg_match('/(?|&)/', $item['href']))
@@ -349,9 +308,9 @@ abstract class Menu_Core {
 				$current = $name;
 			}
 
-			if(! empty($item['submenu']))
+			if( ! $current AND ! empty($item['childrens']))
 			{
-				$current = $this->_find_current($item['submenu']);
+				$current = $this->_find_current($item['childrens']);
 			}
 		}
 
@@ -411,16 +370,17 @@ abstract class Menu_Core {
 	protected function _clear_hidden(array $menu_array)
 	{
 		$_menu = array();
+
 		foreach($menu_array as $path => $menu)
 		{
-			if($menu['visible'] === TRUE)
+			if($menu['is_visible'] == TRUE)
 			{
 				$_menu[$path] = $menu;
 			}
 
-			if($menu['submenu'])
+			if($menu['childrens'])
 			{
-				$_menu[$path]['submenu'] = $this->_clear_hidden($menu['submenu']);
+				$_menu[$path]['childrens'] = $this->_clear_hidden($menu['childrens']);
 			}
 		}
 

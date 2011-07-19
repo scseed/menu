@@ -72,11 +72,6 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'true_label' => __('виден'),
 					'false_label' => __('не виден'),
 				)),
-				'class' => Jelly::field('String', array(
-					'default' => NULL,
-					'allow_null' => TRUE,
-					'convert_empty' => TRUE,
-				)),
 			));
 	    parent::initialize($meta);
 	}
