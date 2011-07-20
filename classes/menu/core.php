@@ -109,7 +109,7 @@ abstract class Menu_Core {
 	 * @param string $type
 	 * @return Kohana_View|null
 	 */
-	public function generate($type = 'top')
+	public function generate($type = 'pages')
 	{
 		$current_request = Request::current();
 		$_params = $current_request->param();
@@ -120,25 +120,20 @@ abstract class Menu_Core {
 			unset($_params['id']);
 
 		$_params = ($_params) ? serialize($_params) : '';
-		$query = preg_replace('/lang=([a-z]{2})/', NULL, URL::query());
-		$query = ($query == '?') ? NULL : $query;
-		
 		$current_request_params = array(
 			Route::name($current_request->route()),
 			$current_request->directory(),
 			$current_request->controller(),
 			$current_request->action(),
 			$_params,
-			$query,
+			URL::query(),
 		);
 
 		$active_menu = implode('_', $current_request_params);
 
-		// Overriding page->home to home->index path
-		if($active_menu == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
-			$active_menu = 'default__home_index__';
-
-		$menu = Page::instance()->pages_structure();
+		$menu = ($type == 'pages')
+			? Page::instance()->pages_structure()
+			: $this->_build_unique_menu($type);
 
 		if($menu)
 		{
@@ -166,6 +161,81 @@ abstract class Menu_Core {
 		{
 			return NULL;
 		}
+	}
+
+	public function _build_unique_menu($type)
+	{
+		$menu_root = Jelly::query('menu')
+			->where('name', '=', $type)
+			->where('title', '=', NULL)
+			->where('route_name', '=', $this->_destination)
+			->limit(1)
+			->select();
+
+
+		$menu_items = $menu_root->descendants(TRUE);
+
+		$menu_flat_arr = array();
+		foreach($menu_items as $menu_item)
+		{
+			$menu_flat_arr[$menu_item->id] = $menu_item->as_array();
+		}
+
+		// Trees mapped
+        $trees = array();
+        $l = 0;
+        if (count($menu_flat_arr) > 0) {
+			// Node Stack. Used to help building the hierarchy
+			$stack = array();
+			foreach ($menu_flat_arr as $menu_item)
+			{
+				$route          = Route::get($menu_item['route_name']);
+				$route_defaults = $route->get_defaults();
+				$directory  = ($menu_item['directory'])  ? $menu_item['directory']         : Arr::get($route_defaults, 'directory', NULL);
+				$controller = ($menu_item['controller']) ? $menu_item['controller']        : $route_defaults['controller'];
+				$action     = ($menu_item['action'])     ? $menu_item['action']            : $route_defaults['action'];
+				$params     = ($menu_item['params'])     ? serialize($menu_item['params']) : NULL;
+				$query      = ($menu_item['query'])      ? $menu_item['query']             : NULL;
+				$key        = implode('_', array($menu_item['route_name'], $directory, $controller, $action, $params, $query));
+
+				if($key == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
+				$key = 'default__home_index__';
+
+				$menu_item['params'] = (!empty($menu_item['params'])) ? serialize($menu_item['params']) : $menu_item['params'];
+				$menu_item['key'] = $key;
+				
+				$item = $menu_item;
+				$item['childrens'] = array();
+
+				// Number of stack items
+				$l = count($stack);
+
+				// Check if we're dealing with different levels
+				while($l > 0 && $stack[$l - 1]['level'] >= $item['level'])
+				{
+					array_pop($stack);
+					$l--;
+				}
+
+				// Stack is empty (we are inspecting the root)
+				if ($l == 0)
+				{
+					// Assigning the root node
+					$i = count($trees);
+					$trees[$i] = $item;
+					$stack[] = & $trees[$i];
+				}
+				else
+				{
+					// Add node to parent
+					$i = count($stack[$l - 1]['childrens']);
+					$stack[$l - 1]['childrens'][$i] = $item;
+					$stack[] = & $stack[$l - 1]['childrens'][$i];
+				}
+			}
+        }
+
+		return $trees[0]['childrens'];
 	}
 
 	/**
@@ -203,7 +273,7 @@ abstract class Menu_Core {
 				'action'        => Arr::get($menu_item, 'action', NULL),
 			);
 
-			$params += unserialize(Arr::get($menu_item, 'params', array()));
+			$params += unserialize(Arr::get($menu_item, 'params', 'a:1:{i:0;N;}'));
 
 			$href = ($host === FALSE)
 				? $route->uri($params) . Arr::get($menu_item, 'query', NULL)
@@ -343,22 +413,6 @@ abstract class Menu_Core {
 //		}
 //
 		return TRUE;
-	}
-
-	/**
-	 * Finds menu root
-	 *
-	 * @param  string $name
-	 * @return Jelly_Model_MPTT
-	 */
-	protected function _get_root($name)
-	{
-		return Jelly::query('menu')
-			->where('name', '=', $name)
-			->where('title', '=', NULL)
-			->where('route_name', '=', $this->_destination)
-			->limit(1)
-			->select();
 	}
 
 	/**
