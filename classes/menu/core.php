@@ -131,6 +131,10 @@ abstract class Menu_Core {
 
 		$active_menu = implode('_', $current_request_params);
 
+		// Overriding page->home to home->index path
+		if($active_menu == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
+			$active_menu = 'default__home_index__';
+		
 		$menu = ($type == 'pages')
 			? Page::instance()->pages_structure()
 			: $this->_build_unique_menu($type);
