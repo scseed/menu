@@ -67,7 +67,8 @@ class Model_Menu extends Jelly_Model_MPTT {
 					'allow_null' => TRUE,
 					'convert_empty' => TRUE,
 				)),
-				'visible' => Jelly::field('Boolean', array(
+				'is_visible' => Jelly::field('Boolean', array(
+					'column' => 'visible',
 					'default' => TRUE,
 					'true_label' => __('виден'),
 					'false_label' => __('не виден'),

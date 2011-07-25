@@ -126,7 +126,7 @@ abstract class Menu_Core {
 			$current_request->controller(),
 			$current_request->action(),
 			$_params,
-			URL::query(),
+			''//URL::query(),
 		);
 
 		$active_menu = implode('_', $current_request_params);
@@ -255,6 +255,19 @@ abstract class Menu_Core {
 		$menu = array();
 		foreach($menu_array as $id => $menu_item)
 		{
+			$menu_item['directory'] = (array_key_exists(':type:directory', $menu_item))
+				? Arr::get($menu_item, ':type:directory', NULL)
+				: $menu_item['directory'];
+			$menu_item['controller'] = (array_key_exists(':type:controller', $menu_item))
+				? Arr::get($menu_item, ':type:controller', NULL)
+				: $menu_item['controller'];
+			$menu_item['action'] = (array_key_exists(':type:action', $menu_item))
+				? Arr::get($menu_item, ':type:action', NULL)
+				: $menu_item['action'];
+			$menu_item['route_name'] = (array_key_exists(':type:route_name', $menu_item))
+				? Arr::get($menu_item, ':type:route_name', NULL)
+				: $menu_item['route_name'];
+
 			$item_name      = $menu_item['key'];
 			$route_name     = Arr::get($menu_item, 'route_name', 'default');
 			$route          = Route::get($route_name);
@@ -371,11 +384,11 @@ abstract class Menu_Core {
 
 		foreach($menu as $name => $item)
 		{
-			if(preg_match('/(?|&)/', $item['href']))
-			{
-				$query = URL::query();
-				exit(Debug::vars($item['href']) . View::factory('profiler/stats'));
-			}
+//			if(preg_match('/(?|&)/', $item['href']))
+//			{
+//				$query = URL::query();
+//				exit(Debug::vars($item['href']) . View::factory('profiler/stats'));
+//			}
 
 			if($item['href'] == $href.$query AND $name != $item['parent'])
 			{
@@ -431,6 +444,9 @@ abstract class Menu_Core {
 
 		foreach($menu_array as $path => $menu)
 		{
+			if(!Arr::get($menu, 'is_visible'))
+				break;
+
 			if($menu['is_visible'] == TRUE)
 			{
 				$_menu[$path] = $menu;
