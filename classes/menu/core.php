@@ -40,6 +40,7 @@ abstract class Menu_Core {
 	 * @var string
 	 */
 	protected $_destination;
+	protected $_menu;
 
 	/**
 	 * Menu instance
@@ -134,7 +135,7 @@ abstract class Menu_Core {
 		// Overriding page->home to home->index path
 		if($active_menu == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
 			$active_menu = 'default__home_index__';
-		
+
 		$menu = ($type == 'pages')
 			? Page::instance()->pages_structure()
 			: $this->_build_unique_menu($type);
@@ -158,6 +159,8 @@ abstract class Menu_Core {
 				$menu[$active_menu_item]['childrens'][$active_submenu_item]['active_class'] = $this->_active_class;
 
 			$menu = $this->_clear_hidden($menu);
+
+			$this->_menu = $menu;
 
 			return View::factory($this->_views_path . DIRECTORY_SEPARATOR . $type)->bind('menu_arr', $menu);
 		}
