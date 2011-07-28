@@ -137,7 +137,7 @@ abstract class Menu_Core {
 			$active_menu = 'default__home_index__';
 
 		$menu = ($type == 'pages')
-			? Page::instance()->pages_structure()
+			? Page::instance()->pages_structure(FALSE, I18n::lang())
 			: $this->_build_unique_menu($type);
 
 		if($menu)
