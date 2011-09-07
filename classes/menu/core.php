@@ -210,7 +210,7 @@ abstract class Menu_Core {
 
 				$menu_item['params'] = (!empty($menu_item['params'])) ? serialize($menu_item['params']) : $menu_item['params'];
 				$menu_item['key'] = $key;
-				
+
 				$item = $menu_item;
 				$item['childrens'] = array();
 
@@ -275,6 +275,10 @@ abstract class Menu_Core {
 			$route_name     = Arr::get($menu_item, 'route_name', 'default');
 			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
+			$page_params    = unserialize(Arr::get($menu_item, 'params', 'a:1:{i:0;N;}'));
+
+			if($route_name == 'page' AND ! Arr::get($page_params, 'page_path', NULL))
+				continue;
 
 			$host = Arr::get($route_defaults, 'host', FALSE);
 			$config = Kohana::config('pages');
@@ -293,7 +297,7 @@ abstract class Menu_Core {
 				'action'        => Arr::get($menu_item, 'action', NULL),
 			);
 
-			$params += unserialize(Arr::get($menu_item, 'params', 'a:1:{i:0;N;}'));
+			$params += $page_params;
 
 			$href = ($host === FALSE)
 				? $route->uri($params) . Arr::get($menu_item, 'query', NULL)
