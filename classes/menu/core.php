@@ -281,7 +281,7 @@ abstract class Menu_Core {
 				continue;
 
 			$host = Arr::get($route_defaults, 'host', FALSE);
-			$config = Kohana::config('pages');
+			$config = Kohana::$config->load('pages');
 
 			$lang = NULL;
 
