@@ -143,7 +143,7 @@ abstract class Menu_Core {
 		if($menu)
 		{
 			// Forming menu array from database data
-			$menu = $this->_gen_menu($menu);
+			$menu = $this->_gen_menu($menu, NULL, $type);
 
 			// Searching the active menu item
 			$active_menu_item    = $this->_find_parent($menu, $active_menu);
@@ -206,7 +206,7 @@ abstract class Menu_Core {
 				$key        = implode('_', array($menu_item['route_name'], $directory, $controller, $action, $params, $query));
 
 				if($key == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
-				$key = 'default__home_index__';
+					$key = 'default__home_index__';
 
 				$menu_item['params'] = (!empty($menu_item['params'])) ? serialize($menu_item['params']) : $menu_item['params'];
 				$menu_item['key'] = $key;
@@ -260,22 +260,27 @@ abstract class Menu_Core {
 		{
 			$menu_item['directory'] = (array_key_exists(':type:directory', $menu_item))
 				? Arr::get($menu_item, ':type:directory', NULL)
-				: $menu_item['directory'];
+				: Arr::get($menu_item, 'directory', NULL);
 			$menu_item['controller'] = (array_key_exists(':type:controller', $menu_item))
 				? Arr::get($menu_item, ':type:controller', NULL)
-				: $menu_item['controller'];
+				: Arr::get($menu_item, 'controller');
 			$menu_item['action'] = (array_key_exists(':type:action', $menu_item))
 				? Arr::get($menu_item, ':type:action', NULL)
-				: $menu_item['action'];
+				: Arr::get($menu_item, 'action');
 			$menu_item['route_name'] = (array_key_exists(':type:route_name', $menu_item))
 				? Arr::get($menu_item, ':type:route_name', NULL)
-				: $menu_item['route_name'];
+				: Arr::get($menu_item, 'route_name');
 
 			$item_name      = $menu_item['key'];
 			$route_name     = Arr::get($menu_item, 'route_name', 'default');
 			$route          = Route::get($route_name);
 			$route_defaults = $route->get_defaults();
 			$page_params    = unserialize(Arr::get($menu_item, 'params', 'a:1:{i:0;N;}'));
+
+			if(isset($page_params['page_alias']))
+			{
+				$page_params['page_path'] = $page_params['page_alias'];
+			}
 
 			if($route_name == 'page' AND ! Arr::get($page_params, 'page_path', NULL))
 				continue;
