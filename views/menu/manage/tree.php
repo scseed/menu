@@ -7,7 +7,7 @@
 
 	if($parent->loaded())
 	{
-		$link = Request::current()->uri(array(
+		$link = Route::url(Route::name(Request::current()->route()), array(
 			'controller' => 'menu',
 			'action' => 'tree',
 			'id' => $parent->id,
@@ -15,7 +15,7 @@
 	}
 	else
 	{
-		$link = Request::current()->uri(array(
+		$link = Route::url(Route::name(Request::current()->route()), array(
 			'controller' => 'menu',
 			'action' => '',
 			'id' => '',
@@ -31,7 +31,7 @@
 		<li>
 			<?php echo ($node->visible) ? '&diams;' : '&loz;'?>
 			<?php echo HTML::anchor(
-				Request::current()->uri(array(
+				Route::url(Route::name(Request::current()->route()), array(
 					'controller' => 'menu',
 					'action' => 'tree',
 					'id' => $node->id,
@@ -40,21 +40,21 @@
 			|
 			<span class="insertions">
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'add',
 						'id' => 'node',
 					)) . URL::query(array('root' => $root->id, 'prev' => $node->id)),
 					__('+ new node before'))?>
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'add',
 						'id' => 'node',
 					)). URL::query(array('root' => $node->id)),
 					__('+ child'))?>
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'add',
 						'id' => 'node',
@@ -62,15 +62,15 @@
 					__('+ new node after'))?>
 				|
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'visibility',
 						'id' => $node->id,
 					)),
-					($node->visible) ? __('hide') : __('show'))?>
+					($node->is_visible) ? __('hide') : __('show'))?>
 				|
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'move',
 						'id' => $node->id,
@@ -78,7 +78,7 @@
 					'&uarr;',
 					array('title' => __('move up')))?>
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'move',
 						'id' => $node->id,
@@ -86,7 +86,7 @@
 					'&darr;',
 					array('title' => __('move down')))?>
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'edit',
 						'id' => $node->id,
@@ -94,7 +94,7 @@
 					'&curren;',
 					array('title' => __('edit')))?>
 				<?php echo HTML::anchor(
-					Request::current()->uri(array(
+					Route::url(Route::name(Request::current()->route()), array(
 						'controller' => 'menu',
 						'action' => 'delete',
 						'id' => $node->id,
@@ -109,7 +109,7 @@
 <?php echo (count($tree))
 	? NULL
 	: HTML::anchor(
-		Request::current()->uri(array(
+		Route::url(Route::name(Request::current()->route()), array(
 			'controller' => 'menu',
 			'action' => 'add',
 			'id' => 'node',

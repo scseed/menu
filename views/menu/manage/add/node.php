@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');?>
 <?php echo Form::open(Request::current()->uri().URL::query())?>
-	<legend><?php echo __('Создание нового элемента раздела')?> "<?php echo $root->name?>"</legend>
+	<legend><?php echo __('Создание нового элемента раздела')?> "<?php echo (is_object($root)) ? $root->name : NULL?>"</legend>
 
 	<div class="form_item">
 	<?php echo Form::label('menu_name', __('Наименование пункта меню'))?>

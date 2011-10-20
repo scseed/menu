@@ -4,7 +4,7 @@
 	<ul>
 <?php foreach($roots as $root):?>
 		<li><?php echo HTML::anchor(
-			Request::current()->uri(array(
+			Route::url(Route::name(Request::current()->route()), array(
 				'controller' => 'menu',
 				'action' => 'tree',
 				'id' => $root->id,
@@ -13,7 +13,7 @@
 		)?>
 			|
 			<?php echo HTML::anchor(
-				Request::current()->uri(array(
+				Route::url(Route::name(Request::current()->route()), array(
 					'controller' => 'menu',
 					'action' => 'edit',
 					'id' => $root->id,
@@ -21,7 +21,7 @@
 				'&curren;',
 				array('title' => __('edit')))?>
 			<?php echo HTML::anchor(
-				Request::current()->uri(array(
+				Route::url(Route::name(Request::current()->route()), array(
 					'controller' => 'menu',
 					'action' => 'delete',
 					'id' => $root->id,
@@ -33,7 +33,7 @@
 	</ul>
 </div>
 <?php echo HTML::anchor(
-	Request::current()->uri(array(
+	Route::url(Route::name(Request::current()->route()), array(
 		'controller' => 'menu',
 		'action' => 'add',
 		'id' => 'root',
