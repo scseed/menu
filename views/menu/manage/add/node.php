@@ -43,8 +43,8 @@
 	<?php echo Form::input('class', $post['class'], array('id' => 'menu_class'))?>
 	</div>
 	<div class="form_item">
-	<?php echo Form::label('menu_controller', __('Статус видимости'))?>
-	<?php echo Form::select('visible', $visibilities, $post['visible'], array('id' => 'menu_visible'))?>
+	<?php echo Form::label('is_visible', __('Статус видимости'))?>
+	<?php echo Form::select('is_visible', $visibilities, $post['is_visible'], array('id' => 'is_visible'))?>
 	</div>
 
 	<div class="form_button"><?php echo Form::button(NULL, __('создать'))?> | <?php echo HTML::anchor($back, __('отмена'))?></div>
