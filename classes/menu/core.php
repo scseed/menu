@@ -136,7 +136,7 @@ abstract class Menu_Core {
 		if($active_menu == 'page__page_show_a:1:{s:9:"page_path";s:4:"home";}_')
 			$active_menu = 'default__home_index__';
 
-		$menu = ($type == 'pages')
+		$menu = (preg_match('/pages/', $type))
 			? Page::instance()->pages_structure(FALSE, I18n::lang())
 			: $this->_build_unique_menu($type);
 
