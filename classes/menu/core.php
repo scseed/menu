@@ -308,7 +308,10 @@ abstract class Menu_Core {
 				? $route->uri($params) . Arr::get($menu_item, 'query', NULL)
 				: $host;
 
-			if( ! $this->_access_check($route_name,	Arr::get($menu_item, 'controller', $route_defaults['controller'])))
+			if( ! $this->_access_check(
+				$route_name,
+				Arr::get($menu_item, 'controller', $route_defaults['controller']),
+				Arr::get($menu_item, 'action', $route_defaults['action'])))
 			{
 				continue;
 			}
@@ -425,7 +428,7 @@ abstract class Menu_Core {
 	 * @param  string $controller
 	 * @return bool
 	 */
-	protected function _access_check($route_name, $controller)
+	protected function _access_check($route_name, $controller, $action)
 	{
 //		if(class_exists('ACL'))
 //		{
