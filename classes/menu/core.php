@@ -431,7 +431,7 @@ abstract class Menu_Core {
 	 */
 	protected function _access_check($route_name, $controller, $action)
 	{
-		if(class_exists('Deputy'))
+		if(class_exists('Deputy') AND $this->_user_roles)
 		{
 			$deputy = Deputy::instance();
 			$roles = Arr::extract(Kohana::$config->load('deputy.roles'), $this->_user_roles);
