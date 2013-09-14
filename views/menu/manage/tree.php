@@ -21,7 +21,7 @@
 		));
 	}
 
-	echo HTML::anchor($link, '<i class="icon-reply"></i> '.__('move to upper level'), array('class' => 'btn btn-mini btn-inverse'));
+	echo HTML::anchor($link, '<i class="icon-reply"></i> '.__('на уровень вверх'), array('class' => 'btn btn-mini btn-inverse'));
 	?>
 </p>
 <table class="table table-striped table-bordered table-hover">
@@ -139,7 +139,7 @@
 		</tr>
 <?php endforeach;?>
 </table>
-<p><?php echo HTML::anchor($link, '<i class="icon-reply"></i> '.__('move to upper level'), array('class' => 'btn btn-mini btn-inverse'));?></p>
+<p><?php echo HTML::anchor($link, '<i class="icon-reply"></i> '.__('на уровень вверх'), array('class' => 'btn btn-mini btn-inverse'));?></p>
 <?php echo (count($tree))
 	? NULL
 	: HTML::anchor(

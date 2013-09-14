@@ -24,5 +24,6 @@ return array(
 	'Наименование корня дерева' => 'Tree root name',
 	'Наименование роута по-умолчанию' => 'Default route name',
 	'Наименование контроллера по-умолчанию' => 'Default controller name',
-	'отмена' => 'back'
+	'отмена' => 'back',
+	'на уровень вверх' => 'move to upper level',
 );

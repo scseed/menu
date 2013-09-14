@@ -49,7 +49,7 @@ abstract class Menu_Core {
 	 * @param string $destination
 	 * @return object Menu
 	 */
-	public static function factory($destination = 'default')
+	public static function factory($destination = 'default', $user_roles = array())
 	{
 		$menu_extention = 'Menu_' . ucfirst($destination);
 
@@ -64,7 +64,7 @@ abstract class Menu_Core {
 
 		if( Arr::get(self::$instances, $destination, NULL) === NULL)
 		{
-			self::$instances[$destination] = new $menu_class($destination);
+			self::$instances[$destination] = new $menu_class($destination, $user_roles);
 		}
 
 		return self::$instances[$destination];
@@ -73,9 +73,10 @@ abstract class Menu_Core {
 	/**
 	 * @param string $destination
 	 */
-	public function __construct($destination)
+	public function __construct($destination, $user_roles)
 	{
 		$this->_destination = $destination;
+		$this->_user_roles  = $user_roles;
 	}
 
 	public function lang()
@@ -430,20 +431,17 @@ abstract class Menu_Core {
 	 */
 	protected function _access_check($route_name, $controller, $action)
 	{
-//		if(class_exists('ACL'))
-//		{
-//			if ( ! ACL::instance()->is_allowed(
-//				Auth::instance()->get_user()->roles->as_array('id', 'name'),
-//				array(
-//					'route_name' => $route_name,
-//					'resource' => $controller
-//				),
-//				array('read')))
-//			{
-//				return FALSE;
-//			}
-//		}
-//
+		if(class_exists('Deputy'))
+		{
+			$deputy = Deputy::instance();
+			$roles = Arr::extract(Kohana::$config->load('deputy.roles'), $this->_user_roles);
+			$deputy->set_roles($roles);
+			$resource = implode('/', array($controller, $action));
+
+			if($deputy->allowed($resource) == FALSE)
+				return FALSE;
+		}
+
 		return TRUE;
 	}
 
