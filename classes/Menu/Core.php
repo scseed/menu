@@ -49,7 +49,7 @@ abstract class Menu_Core {
 	 * @param string $destination
 	 * @return object Menu
 	 */
-	public static function factory($destination = 'default', $user_roles = array())
+	public static function factory($destination = 'default', $user_roles = array(), Request $request)
 	{
 		$menu_extention = 'Menu_' . ucfirst($destination);
 
@@ -64,7 +64,7 @@ abstract class Menu_Core {
 
 		if( Arr::get(self::$instances, $destination, NULL) === NULL)
 		{
-			self::$instances[$destination] = new $menu_class($destination, $user_roles);
+			self::$instances[$destination] = new $menu_class($destination, $user_roles, $request);
 		}
 
 		return self::$instances[$destination];
@@ -73,10 +73,12 @@ abstract class Menu_Core {
 	/**
 	 * @param string $destination
 	 */
-	public function __construct($destination, $user_roles)
+	public function __construct($destination, $user_roles, Request $request)
 	{
 		$this->_destination = $destination;
 		$this->_user_roles  = $user_roles;
+		$this->controller   = $request->controller();
+		$this->action       = $request->action();
 	}
 
 	public function lang()
@@ -243,7 +245,7 @@ abstract class Menu_Core {
 			}
         }
 
-		return $trees[0]['childrens'];
+		return Arr::get(Arr::get($trees, 0), 'childrens');
 	}
 
 	/**
